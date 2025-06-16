@@ -1,232 +1,178 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Play, RotateCcw, Check, X, Star, BookOpen, Volume2, Trophy, 
-  MessageCircle, Headphones, Award, Target, Calendar, Brain, 
-  Zap, Users, Globe, Book, Mic, Settings, TrendingUp, Clock, 
-  Heart, FileText, PenTool, Eye, Ear, ArrowRight, ChevronRight, 
-  BarChart3, Lightbulb, Puzzle, Timer 
+  Target, BookOpen, Trophy, Calendar, 
+  Clock, Heart, Volume2, Eye, Mic, 
+  Headphones, BarChart3, Users, Star 
 } from 'lucide-react';
 
-const IELTSEnglishLearningApp = () => {
+const IELTSApp = () => {
+  // Basic state
   const [currentSection, setCurrentSection] = useState('dashboard');
-  const [userLevel, setUserLevel] = useState('pre-intermediate');
-  const [currentScore, setCurrentScore] = useState(4.5);
-  const [targetScore, setTargetScore] = useState(6.5);
-  const [dailyStreak, setDailyStreak] = useState(12);
-  const [wordsLearned, setWordsLearned] = useState(342);
-  const [lessonsCompleted, setLessonsCompleted] = useState(28);
-  const [practiceTime, setPracticeTime] = useState(45);
-  
-  // Password protection system
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
   const [showPasswordError, setShowPasswordError] = useState(false);
   const [showDemoModal, setShowDemoModal] = useState(false);
   
-  // Secret password - change this for security
-  const MASTER_PASSWORD = 'IELTSMaster2025';
+  // User progress
+  const [currentScore, setCurrentScore] = useState(4.5);
+  const [targetScore, setTargetScore] = useState(6.5);
+  const [wordsLearned, setWordsLearned] = useState(342);
+  const [lessonsCompleted, setLessonsCompleted] = useState(28);
+  const [dailyStreak, setDailyStreak] = useState(12);
   
-  // Demo limitations
+  // App config
+  const MASTER_PASSWORD = 'IELTSMaster2025';
   const isDemoMode = !isAuthenticated;
+  
   const demoLimitations = {
     maxVocabWords: 5,
     maxGrammarLessons: 2,
     maxActivitiesPerDay: 3,
-    accessibleSections: ['dashboard', 'vocabulary', 'grammar'],
-    restrictedMessage: "This feature is only available in the full version!"
+    accessibleSections: ['dashboard', 'vocabulary', 'grammar']
   };
 
-  // IELTS-focused skill areas
-  const skillAreas = {
-    vocabulary: {
-      title: "IELTS Vocabulary",
-      description: "Learn 3000+ IELTS-specific words",
-      currentLevel: "B1",
-      progress: 68,
-      categories: [
-        { name: "Academic Words", words: 570, progress: 72, difficulty: "Medium" },
-        { name: "Task 1 Vocabulary", words: 200, progress: 45, difficulty: "Hard" },
-        { name: "Speaking Topics", words: 400, progress: 85, difficulty: "Easy" },
-        { name: "Reading Comprehension", words: 600, progress: 60, difficulty: "Medium" },
-        { name: "Writing Expressions", words: 300, progress: 35, difficulty: "Hard" },
-        { name: "Listening Context", words: 250, progress: 78, difficulty: "Easy" }
-      ]
-    },
-    grammar: {
-      title: "IELTS Grammar",
-      description: "Complex grammar structures in IELTS context",
-      currentLevel: "B1",
-      progress: 55,
-      topics: [
-        { name: "Complex Sentences", progress: 70, importance: "Critical for Writing Task 2" },
-        { name: "Passive Voice", progress: 80, importance: "Essential for Academic Writing" },
-        { name: "Conditionals", progress: 45, importance: "Important for Speaking Part 3" },
-        { name: "Modal Verbs", progress: 65, importance: "Useful for all modules" },
-        { name: "Relative Clauses", progress: 40, importance: "Advanced Writing" },
-        { name: "Reported Speech", progress: 55, importance: "Academic contexts" }
-      ]
-    },
-    pronunciation: {
-      title: "Pronunciation and Intonation",
-      description: "Improve IELTS Speaking score",
-      currentLevel: "B1",
-      progress: 62,
-      areas: [
-        { name: "Word Stress", progress: 75, impact: "High" },
-        { name: "Sentence Intonation", progress: 60, impact: "High" },
-        { name: "Connected Speech", progress: 45, impact: "Medium" },
-        { name: "Difficult Sounds", progress: 70, impact: "Medium" },
-        { name: "Fluency Practice", progress: 55, impact: "Critical" }
-      ]
-    },
-    listening: {
-      title: "Listening Comprehension",
-      description: "Various accents and speech situations",
-      currentLevel: "B1",
-      progress: 58,
-      skills: [
-        { name: "Note-taking", progress: 65, context: "Academic lectures" },
-        { name: "Multiple Speakers", progress: 50, context: "Group discussions" },
-        { name: "Fast Speech", progress: 40, context: "Natural conversations" },
-        { name: "Various Accents", progress: 55, context: "International English" },
-        { name: "Specific Information", progress: 70, context: "IELTS question types" }
-      ]
-    }
+  // Sample vocabulary data
+  const vocabularyData = {
+    beginner: [
+      { 
+        word: 'significant', 
+        meaning: 'important', 
+        band: '4.5', 
+        context: 'The results show a significant increase.' 
+      },
+      { 
+        word: 'various', 
+        meaning: 'different', 
+        band: '4.5', 
+        context: 'There are various ways to solve this problem.' 
+      },
+      { 
+        word: 'approximately', 
+        meaning: 'about', 
+        band: '5.0', 
+        context: 'Approximately 30% of students...' 
+      },
+      { 
+        word: 'evident', 
+        meaning: 'obvious', 
+        band: '5.0', 
+        context: 'It is evident that climate change is happening.' 
+      },
+      { 
+        word: 'substantial', 
+        meaning: 'considerable', 
+        band: '6.0', 
+        context: 'There has been substantial progress in technology.' 
+      },
+      { 
+        word: 'phenomena', 
+        meaning: 'events', 
+        band: '6.0', 
+        context: 'Natural phenomena like earthquakes are unpredictable.' 
+      }
+    ]
   };
 
-  // Daily learning activities
+  // Sample activities
   const dailyActivities = [
     {
-      id: "vocab-builder",
-      title: "Daily Vocabulary Builder",
-      description: "20 new IELTS words every day",
-      time: "15 min",
+      id: 'vocab-builder',
+      title: 'Daily Vocabulary Builder',
+      description: '20 new IELTS words every day',
+      time: '15 min',
       xp: 50,
-      type: "vocabulary",
-      difficulty: "Medium",
-      todayWords: ["phenomenon", "substantial", "undergo", "comprise", "inevitable"]
+      difficulty: 'Medium',
+      todayWords: ['phenomenon', 'substantial', 'undergo']
     },
     {
-      id: "grammar-focus",
-      title: "Grammar Structure Practice",
-      description: "Build complex sentences",
-      time: "20 min", 
+      id: 'grammar-focus',
+      title: 'Grammar Structure Practice',
+      description: 'Build complex sentences',
+      time: '20 min',
       xp: 75,
-      type: "grammar",
-      difficulty: "Hard",
-      todayTopic: "Complex sentences with relative clauses"
+      difficulty: 'Hard'
     },
     {
-      id: "listening-mini",
-      title: "Mini Listening Practice",
-      description: "Short audio texts with different accents",
-      time: "10 min",
+      id: 'listening-mini',
+      title: 'Mini Listening Practice',
+      description: 'Short audio texts with different accents',
+      time: '10 min',
       xp: 40,
-      type: "listening", 
-      difficulty: "Medium",
-      todayFocus: "British vs Australian accent"
+      difficulty: 'Medium'
     },
     {
-      id: "speaking-drill",
-      title: "Speaking Practice",
-      description: "Practice IELTS Speaking topics",
-      time: "15 min",
+      id: 'speaking-drill',
+      title: 'Speaking Practice',
+      description: 'Practice IELTS Speaking topics',
+      time: '15 min',
       xp: 60,
-      type: "speaking",
-      difficulty: "Hard",
-      todayTopic: "Describe your hometown"
+      difficulty: 'Hard'
     },
     {
-      id: "reading-skills",
-      title: "Reading Techniques",
-      description: "Develop skimming and scanning",
-      time: "25 min",
+      id: 'reading-skills',
+      title: 'Reading Techniques',
+      description: 'Develop skimming and scanning',
+      time: '25 min',
       xp: 80,
-      type: "reading",
-      difficulty: "Hard",
-      todaySkill: "Identifying main ideas"
+      difficulty: 'Hard'
     },
     {
-      id: "writing-practice",
-      title: "Writing Practice",
-      description: "Academic writing skills development",
-      time: "30 min",
+      id: 'writing-practice',
+      title: 'Writing Practice',
+      description: 'Academic writing skills development',
+      time: '30 min',
       xp: 100,
-      type: "writing",
-      difficulty: "Very Hard",
-      todayTask: "Paragraph structure and linking words"
+      difficulty: 'Very Hard'
     }
   ];
 
-  // IELTS vocabulary by bands
-  const vocabularyByBand = {
-    "4.0-5.0": {
-      title: "Foundation Vocabulary",
-      description: "Basic IELTS words",
-      words: [
-        { word: "significant", meaning: "important", band: "4.5", context: "The results show a significant increase.", audio: true },
-        { word: "various", meaning: "different", band: "4.5", context: "There are various ways to solve this problem.", audio: true },
-        { word: "approximately", meaning: "about", band: "5.0", context: "Approximately 30% of students...", audio: true },
-        { word: "evident", meaning: "obvious", band: "5.0", context: "It is evident that climate change is happening.", audio: true }
-      ]
-    },
-    "5.5-6.0": {
-      title: "Intermediate Vocabulary", 
-      description: "Mid-level IELTS vocabulary",
-      words: [
-        { word: "substantial", meaning: "considerable", band: "6.0", context: "There has been substantial progress in technology.", audio: true },
-        { word: "phenomena", meaning: "events", band: "6.0", context: "Natural phenomena like earthquakes are unpredictable.", audio: true },
-        { word: "comprise", meaning: "consist of", band: "5.5", context: "The study comprises three main sections.", audio: true },
-        { word: "undergo", meaning: "experience", band: "6.0", context: "The city will undergo major renovations.", audio: true }
-      ]
-    },
-    "6.5-7.0": {
-      title: "Advanced Vocabulary",
-      description: "High-level IELTS vocabulary", 
-      words: [
-        { word: "unprecedented", meaning: "never before", band: "7.0", context: "The pandemic created unprecedented challenges.", audio: true },
-        { word: "deteriorate", meaning: "get worse", band: "6.5", context: "Air quality continues to deteriorate in major cities.", audio: true },
-        { word: "facilitate", meaning: "make easier", band: "6.5", context: "Technology can facilitate learning processes.", audio: true },
-        { word: "inevitable", meaning: "unavoidable", band: "7.0", context: "Change in education is inevitable.", audio: true }
-      ]
-    }
-  };
-
-  // Grammar lessons with IELTS context
+  // Grammar lessons
   const grammarLessons = [
     {
-      id: "complex-sentences",
-      title: "Complex Sentences",
-      level: "B2",
-      ieltsRelevance: "Writing Task 2, Speaking Part 3",
-      description: "How to build complex sentences for IELTS writing",
+      id: 'complex-sentences',
+      title: 'Complex Sentences',
+      level: 'B2',
+      ieltsRelevance: 'Writing Task 2, Speaking Part 3',
+      description: 'How to build complex sentences for IELTS writing',
       examples: [
         {
-          simple: "Technology is useful. It can be dangerous.",
-          complex: "Although technology is useful, it can also be dangerous when not used properly.",
-          explanation: "This structure helps you achieve higher band scores in Writing."
+          simple: 'Technology is useful. It can be dangerous.',
+          complex: 'Although technology is useful, it can also be dangerous when not used properly.',
+          explanation: 'This structure helps you achieve higher band scores in Writing.'
         }
-      ],
-      practice: "Transform simple sentences into complex ones"
+      ]
     },
     {
-      id: "passive-voice",
-      title: "Passive Voice",
-      level: "B1-B2", 
-      ieltsRelevance: "Academic Writing, Task 1",
-      description: "When and how to use passive voice in IELTS",
+      id: 'passive-voice',
+      title: 'Passive Voice',
+      level: 'B1-B2',
+      ieltsRelevance: 'Academic Writing, Task 1',
+      description: 'When and how to use passive voice in IELTS',
       examples: [
         {
-          active: "Researchers conducted the study in 2020.",
-          passive: "The study was conducted by researchers in 2020.",
-          explanation: "Academic writing frequently uses passive voice."
+          active: 'Researchers conducted the study in 2020.',
+          passive: 'The study was conducted by researchers in 2020.',
+          explanation: 'Academic writing frequently uses passive voice.'
         }
-      ],
-      practice: "Convert active sentences to passive for academic writing"
+      ]
+    },
+    {
+      id: 'conditionals',
+      title: 'Conditional Sentences',
+      level: 'B2',
+      ieltsRelevance: 'Speaking Part 3, Writing Task 2',
+      description: 'Master all types of conditional sentences',
+      examples: [
+        {
+          simple: 'If you study hard, you will pass.',
+          complex: 'If you had studied harder, you would have achieved a higher score.',
+          explanation: 'Conditionals show your ability to discuss hypothetical situations.'
+        }
+      ]
     }
   ];
 
-  // Check password
+  // Password functions
   const handlePasswordSubmit = () => {
     if (passwordInput === MASTER_PASSWORD) {
       setIsAuthenticated(true);
@@ -240,8 +186,7 @@ const IELTSEnglishLearningApp = () => {
     }
   };
 
-  // Demo restriction check
-  const checkAccess = (sectionName, featureName = '') => {
+  const checkAccess = (sectionName) => {
     if (isDemoMode && !demoLimitations.accessibleSections.includes(sectionName)) {
       setShowDemoModal(true);
       return false;
@@ -249,7 +194,20 @@ const IELTSEnglishLearningApp = () => {
     return true;
   };
 
-  // Password Modal Component
+  const speakWord = (word) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.7;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  const startActivity = (activity) => {
+    alert(`Starting: ${activity.title}`);
+  };
+
+  // Password Modal
   const PasswordModal = () => (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
@@ -275,7 +233,7 @@ const IELTSEnglishLearningApp = () => {
           
           {showPasswordError && (
             <div className="text-red-600 text-sm text-center animate-pulse">
-              ❌ Wrong password! Try again.
+              Wrong password! Try again.
             </div>
           )}
           
@@ -299,21 +257,21 @@ const IELTSEnglishLearningApp = () => {
     </div>
   );
 
-  // Demo Limitation Modal
+  // Demo Modal
   const DemoModal = () => showDemoModal && (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl">
         <div className="text-center">
           <div className="text-4xl mb-4">🔒</div>
           <h3 className="text-xl font-bold text-gray-800 mb-2">Demo Version</h3>
-          <p className="text-gray-600 mb-4">{demoLimitations.restrictedMessage}</p>
+          <p className="text-gray-600 mb-4">This feature is only available in the full version!</p>
           
           <div className="bg-blue-50 p-4 rounded-lg mb-4">
             <h4 className="font-semibold text-blue-800 mb-2">Available in demo:</h4>
             <ul className="text-sm text-blue-700 space-y-1">
-              <li>• Basic vocabulary ({demoLimitations.maxVocabWords} words)</li>
-              <li>• {demoLimitations.maxGrammarLessons} grammar lessons</li>
-              <li>• Daily {demoLimitations.maxActivitiesPerDay} activities</li>
+              <li>• Basic vocabulary (5 words)</li>
+              <li>• 2 grammar lessons</li>
+              <li>• Daily 3 activities</li>
               <li>• Progress tracking</li>
             </ul>
           </div>
@@ -340,11 +298,11 @@ const IELTSEnglishLearningApp = () => {
     </div>
   );
 
-  // Dashboard component
+  // Dashboard
   const Dashboard = () => (
     <div className="space-y-8">
-      {/* Demo Banner */}
-      {isDemoMode && (
+      {/* Status Banner */}
+      {isDemoMode ? (
         <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4 rounded-xl shadow-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -362,10 +320,7 @@ const IELTSEnglishLearningApp = () => {
             </button>
           </div>
         </div>
-      )}
-
-      {/* Full Access Banner */}
-      {isAuthenticated && (
+      ) : (
         <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white p-4 rounded-xl shadow-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -388,7 +343,7 @@ const IELTSEnglishLearningApp = () => {
         </div>
       )}
 
-      {/* Welcome and Progress Overview */}
+      {/* Main Header */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-8 rounded-2xl shadow-xl">
         <div className="flex justify-between items-center">
           <div>
@@ -400,7 +355,7 @@ const IELTSEnglishLearningApp = () => {
                 <span>Current: {currentScore} → Target: {targetScore}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Zap className="w-5 h-5" />
+                <Star className="w-5 h-5" />
                 <span>{dailyStreak} day streak</span>
               </div>
             </div>
@@ -412,7 +367,7 @@ const IELTSEnglishLearningApp = () => {
         </div>
       </div>
 
-      {/* Quick Stats */}
+      {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500">
           <div className="flex items-center justify-between">
@@ -437,8 +392,8 @@ const IELTSEnglishLearningApp = () => {
         <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-purple-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm">Today's Practice</p>
-              <p className="text-3xl font-bold text-gray-800">{practiceTime}m</p>
+              <p className="text-gray-600 text-sm">Practice Time</p>
+              <p className="text-3xl font-bold text-gray-800">45m</p>
             </div>
             <Clock className="w-8 h-8 text-purple-500" />
           </div>
@@ -455,31 +410,26 @@ const IELTSEnglishLearningApp = () => {
         </div>
       </div>
 
-      {/* Today's Learning Activities */}
+      {/* Activities */}
       <div className="bg-white rounded-xl shadow-lg p-6">
         <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
           <Calendar className="w-8 h-8 mr-3 text-blue-600" />
-          Today's IELTS-Focused Activities
+          Today's IELTS Activities
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {dailyActivities.slice(0, isDemoMode ? demoLimitations.maxActivitiesPerDay : dailyActivities.length).map(activity => (
-            <div key={activity.id} className={`border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow ${isDemoMode && dailyActivities.indexOf(activity) >= demoLimitations.maxActivitiesPerDay ? 'opacity-50' : ''}`}>
+          {dailyActivities.slice(0, isDemoMode ? demoLimitations.maxActivitiesPerDay : dailyActivities.length).map((activity, index) => (
+            <div key={activity.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
               <div className="flex justify-between items-start mb-3">
                 <h4 className="font-bold text-lg text-gray-800">{activity.title}</h4>
-                <div className="flex items-center space-x-2">
-                  {isDemoMode && dailyActivities.indexOf(activity) >= demoLimitations.maxActivitiesPerDay && (
-                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">DEMO LIMIT</span>
-                  )}
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                    activity.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
-                    activity.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                    activity.difficulty === 'Hard' ? 'bg-orange-100 text-orange-800' :
-                    'bg-red-100 text-red-800'
-                  }`}>
-                    {activity.difficulty}
-                  </span>
-                </div>
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                  activity.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
+                  activity.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                  activity.difficulty === 'Hard' ? 'bg-orange-100 text-orange-800' :
+                  'bg-red-100 text-red-800'
+                }`}>
+                  {activity.difficulty}
+                </span>
               </div>
               
               <p className="text-gray-600 text-sm mb-3">{activity.description}</p>
@@ -494,16 +444,11 @@ const IELTSEnglishLearningApp = () => {
                       </span>
                     ))}
                     {isDemoMode && activity.todayWords.length > 2 && (
-                      <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">+{activity.todayWords.length - 2} more</span>
+                      <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
+                        +{activity.todayWords.length - 2} more
+                      </span>
                     )}
                   </div>
-                </div>
-              )}
-
-              {activity.todayTopic && (
-                <div className="mb-3">
-                  <p className="text-xs text-gray-500">Today's focus:</p>
-                  <p className="text-sm font-medium text-gray-700">{activity.todayTopic}</p>
                 </div>
               )}
 
@@ -514,57 +459,42 @@ const IELTSEnglishLearningApp = () => {
                 </div>
                 <button 
                   onClick={() => {
-                    if (isDemoMode && dailyActivities.indexOf(activity) >= demoLimitations.maxActivitiesPerDay) {
+                    if (isDemoMode && index >= demoLimitations.maxActivitiesPerDay) {
                       setShowDemoModal(true);
                     } else {
                       startActivity(activity);
                     }
                   }}
                   className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                    isDemoMode && dailyActivities.indexOf(activity) >= demoLimitations.maxActivitiesPerDay
+                    isDemoMode && index >= demoLimitations.maxActivitiesPerDay
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : 'bg-blue-500 text-white hover:bg-blue-600'
                   }`}
-                  disabled={isDemoMode && dailyActivities.indexOf(activity) >= demoLimitations.maxActivitiesPerDay}
                 >
-                  {isDemoMode && dailyActivities.indexOf(activity) >= demoLimitations.maxActivitiesPerDay ? '🔒 Locked' : 'Start'}
+                  {isDemoMode && index >= demoLimitations.maxActivitiesPerDay ? '🔒 Locked' : 'Start'}
                 </button>
               </div>
             </div>
           ))}
           
-          {/* Demo upsell cards */}
+          {/* Demo upsell */}
           {isDemoMode && (
-            <>
-              <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center bg-gray-50">
-                <div className="text-4xl mb-3">🔒</div>
-                <h4 className="font-bold text-lg text-gray-700 mb-2">+3 More Activities</h4>
-                <p className="text-gray-600 text-sm mb-4">Writing practice, advanced speaking, complex grammar</p>
-                <button
-                  onClick={() => setIsAuthenticated(false)}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-                >
-                  Unlock with Password
-                </button>
-              </div>
-              
-              <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center bg-gray-50">
-                <div className="text-4xl mb-3">⭐</div>
-                <h4 className="font-bold text-lg text-gray-700 mb-2">Premium Features</h4>
-                <p className="text-gray-600 text-sm mb-4">AI tutor, personalized plan, advanced analytics</p>
-                <button
-                  onClick={() => setIsAuthenticated(false)}
-                  className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors"
-                >
-                  Upgrade
-                </button>
-              </div>
-            </>
+            <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center bg-gray-50">
+              <div className="text-4xl mb-3">🔒</div>
+              <h4 className="font-bold text-lg text-gray-700 mb-2">+3 More Activities</h4>
+              <p className="text-gray-600 text-sm mb-4">Writing, advanced speaking, complex grammar</p>
+              <button
+                onClick={() => setIsAuthenticated(false)}
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                Unlock with Password
+              </button>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Skill Progress Overview */}
+      {/* Skill Areas */}
       <div className="bg-white rounded-xl shadow-lg p-6">
         <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
           <BarChart3 className="w-8 h-8 mr-3 text-green-600" />
@@ -572,18 +502,21 @@ const IELTSEnglishLearningApp = () => {
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {Object.entries(skillAreas).map(([key, skill]) => (
-            <div key={key} className="border border-gray-200 rounded-lg p-4">
+          {[
+            { key: 'vocabulary', title: 'IELTS Vocabulary', progress: 68, level: 'B1' },
+            { key: 'grammar', title: 'IELTS Grammar', progress: 55, level: 'B1' },
+            { key: 'pronunciation', title: 'Pronunciation', progress: 62, level: 'B1' },
+            { key: 'listening', title: 'Listening', progress: 58, level: 'B1' }
+          ].map((skill) => (
+            <div key={skill.key} className="border border-gray-200 rounded-lg p-4">
               <div className="flex justify-between items-center mb-3">
                 <h4 className="font-bold text-lg">{skill.title}</h4>
-                <span className="text-sm bg-gray-100 px-2 py-1 rounded">{skill.currentLevel}</span>
+                <span className="text-sm bg-gray-100 px-2 py-1 rounded">{skill.level}</span>
               </div>
-              
-              <p className="text-gray-600 text-sm mb-4">{skill.description}</p>
               
               <div className="mb-4">
                 <div className="flex justify-between text-sm mb-2">
-                  <span>Overall Progress</span>
+                  <span>Progress</span>
                   <span>{skill.progress}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3">
@@ -596,17 +529,17 @@ const IELTSEnglishLearningApp = () => {
               
               <button 
                 onClick={() => {
-                  if (checkAccess(key)) {
-                    setCurrentSection(key);
+                  if (checkAccess(skill.key)) {
+                    setCurrentSection(skill.key);
                   }
                 }}
                 className={`w-full py-2 rounded-lg font-medium transition-colors ${
-                  isDemoMode && !demoLimitations.accessibleSections.includes(key)
+                  isDemoMode && !demoLimitations.accessibleSections.includes(skill.key)
                     ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                     : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                 }`}
               >
-                {isDemoMode && !demoLimitations.accessibleSections.includes(key) && '🔒 '}
+                {isDemoMode && !demoLimitations.accessibleSections.includes(skill.key) && '🔒 '}
                 Practice {skill.title}
               </button>
             </div>
@@ -629,73 +562,48 @@ const IELTSEnglishLearningApp = () => {
         </button>
       </div>
 
-      {/* Vocabulary by Band Level */}
       <div className="bg-white rounded-xl shadow-lg p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold">Learn by IELTS Band Level</h3>
-          {isDemoMode && (
-            <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Demo: Limited to {demoLimitations.maxVocabWords} words per level
-            </span>
-          )}
-        </div>
-        <div className="space-y-6">
-          {Object.entries(vocabularyByBand).map(([band, category]) => (
-            <div key={band} className="border border-gray-200 rounded-lg p-4">
-              <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold mb-4">Essential IELTS Words</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {vocabularyData.beginner.slice(0, isDemoMode ? demoLimitations.maxVocabWords : vocabularyData.beginner.length).map((wordObj, index) => (
+            <div key={index} className="bg-gray-50 rounded-lg p-4">
+              <div className="flex justify-between items-start mb-2">
                 <div>
-                  <h4 className="font-bold text-lg">Band {band}: {category.title}</h4>
-                  <p className="text-gray-600 text-sm">{category.description}</p>
+                  <h5 className="font-bold text-gray-800">{wordObj.word}</h5>
+                  <p className="text-gray-600 text-sm">{wordObj.meaning}</p>
                 </div>
-                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
-                  {isDemoMode ? `${Math.min(demoLimitations.maxVocabWords, category.words.length)}/${category.words.length}` : category.words.length} words
-                </span>
+                <div className="flex items-center space-x-2">
+                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                    Band {wordObj.band}
+                  </span>
+                  <button 
+                    onClick={() => speakWord(wordObj.word)}
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    <Volume2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {category.words.slice(0, isDemoMode ? demoLimitations.maxVocabWords : category.words.length).map((wordObj, index) => (
-                  <div key={index} className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h5 className="font-bold text-gray-800">{wordObj.word}</h5>
-                        <p className="text-gray-600 text-sm">{wordObj.meaning}</p>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
-                          Band {wordObj.band}
-                        </span>
-                        {wordObj.audio && (
-                          <button 
-                            onClick={() => speakWord(wordObj.word)}
-                            className="text-blue-500 hover:text-blue-700"
-                          >
-                            <Volume2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                    <p className="text-gray-600 text-xs italic">"{wordObj.context}"</p>
-                  </div>
-                ))}
-                
-                {/* Demo limitation indicator */}
-                {isDemoMode && category.words.length > demoLimitations.maxVocabWords && (
-                  <div className="bg-yellow-50 border-2 border-dashed border-yellow-300 rounded-lg p-4 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-2xl mb-2">🔒</div>
-                      <p className="text-sm font-semibold text-gray-700">+{category.words.length - demoLimitations.maxVocabWords} more words</p>
-                      <button
-                        onClick={() => setIsAuthenticated(false)}
-                        className="mt-2 bg-yellow-500 text-white px-3 py-1 rounded text-xs hover:bg-yellow-600 transition-colors"
-                      >
-                        Unlock
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <p className="text-gray-600 text-xs italic">"{wordObj.context}"</p>
             </div>
           ))}
+          
+          {isDemoMode && vocabularyData.beginner.length > demoLimitations.maxVocabWords && (
+            <div className="bg-yellow-50 border-2 border-dashed border-yellow-300 rounded-lg p-4 flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-2xl mb-2">🔒</div>
+                <p className="text-sm font-semibold text-gray-700">
+                  +{vocabularyData.beginner.length - demoLimitations.maxVocabWords} more words
+                </p>
+                <button
+                  onClick={() => setIsAuthenticated(false)}
+                  className="mt-2 bg-yellow-500 text-white px-3 py-1 rounded text-xs hover:bg-yellow-600 transition-colors"
+                >
+                  Unlock
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -714,7 +622,6 @@ const IELTSEnglishLearningApp = () => {
         </button>
       </div>
 
-      {/* Grammar Topics */}
       <div className="space-y-6">
         {grammarLessons.slice(0, isDemoMode ? demoLimitations.maxGrammarLessons : grammarLessons.length).map(lesson => (
           <div key={lesson.id} className="bg-white rounded-xl shadow-lg p-6">
@@ -756,20 +663,18 @@ const IELTSEnglishLearningApp = () => {
             </div>
             
             <button className="w-full mt-4 bg-purple-500 text-white py-3 rounded-lg hover:bg-purple-600 transition-colors font-semibold">
-              Practice: {lesson.practice}
+              Practice This Grammar
             </button>
           </div>
         ))}
         
-        {/* Demo limitation for grammar */}
         {isDemoMode && grammarLessons.length > demoLimitations.maxGrammarLessons && (
           <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-dashed border-purple-300">
             <div className="text-center">
               <div className="text-4xl mb-4">🔒</div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">More Grammar Lessons</h3>
               <p className="text-gray-600 mb-4">
-                +{grammarLessons.length - demoLimitations.maxGrammarLessons} advanced grammar topics: 
-                Conditionals, Modal Verbs, Relative Clauses...
+                +{grammarLessons.length - demoLimitations.maxGrammarLessons} advanced grammar topics
               </p>
               <button
                 onClick={() => setIsAuthenticated(false)}
@@ -784,27 +689,11 @@ const IELTSEnglishLearningApp = () => {
     </div>
   );
 
-  // Utility functions
-  const speakWord = (word) => {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(word);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.7;
-      window.speechSynthesis.speak(utterance);
-    }
-  };
-
-  const startActivity = (activity) => {
-    alert(`Starting: ${activity.title}\n\nIn a full app, this would launch an interactive ${activity.type} practice session focused on IELTS preparation.`);
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Password Protection Screen */}
-      {!isAuthenticated && currentSection !== 'demo' && (
-        <PasswordModal />
-      )}
-
+      {/* Password Screen */}
+      {!isAuthenticated && <PasswordModal />}
+      
       {/* Demo Modal */}
       <DemoModal />
 
@@ -824,27 +713,12 @@ const IELTSEnglishLearningApp = () => {
               </div>
             </div>
             
-            <div className="flex items-center space-x-6">
-              {isAuthenticated && (
-                <>
-                  <div className="text-sm text-gray-600">
-                    Level: <span className="font-bold text-blue-600">{userLevel}</span>
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    Score: <span className="font-bold text-green-600">{currentScore}</span>
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    Target: <span className="font-bold text-purple-600">{targetScore}</span>
-                  </div>
-                </>
-              )}
-              {isDemoMode && (
-                <div className="flex items-center space-x-2 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-                  <span>Demo Mode</span>
-                </div>
-              )}
-            </div>
+            {isDemoMode && (
+              <div className="flex items-center space-x-2 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+                <span>Demo Mode</span>
+              </div>
+            )}
           </div>
         </div>
       </nav>
@@ -854,29 +728,21 @@ const IELTSEnglishLearningApp = () => {
         {currentSection === 'dashboard' && <Dashboard />}
         {currentSection === 'vocabulary' && <VocabularySection />}
         {currentSection === 'grammar' && <GrammarSection />}
-        {currentSection === 'pronunciation' && (
+        {(currentSection === 'pronunciation' || currentSection === 'listening') && (
           <div className="text-center py-20">
             <div className="text-6xl mb-4">🔒</div>
-            <Mic className="w-16 h-16 mx-auto text-red-500 mb-4" />
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Pronunciation Practice</h2>
-            <p className="text-gray-600 mb-4">AI-powered speech recognition and feedback</p>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              {currentSection === 'pronunciation' ? 'Pronunciation Practice' : 'Listening Practice'}
+            </h2>
+            <p className="text-gray-600 mb-4">
+              {currentSection === 'pronunciation' 
+                ? 'AI-powered speech recognition and feedback' 
+                : 'Authentic IELTS-style audio with various accents'
+              }
+            </p>
             <button
               onClick={() => setIsAuthenticated(false)}
-              className="bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition-colors font-semibold"
-            >
-              Unlock with Password
-            </button>
-          </div>
-        )}
-        {currentSection === 'listening' && (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4">🔒</div>
-            <Headphones className="w-16 h-16 mx-auto text-green-500 mb-4" />
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Listening Practice</h2>
-            <p className="text-gray-600 mb-4">Authentic IELTS-style audio with various accents</p>
-            <button
-              onClick={() => setIsAuthenticated(false)}
-              className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors font-semibold"
+              className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors font-semibold"
             >
               Unlock with Password
             </button>
@@ -887,4 +753,4 @@ const IELTSEnglishLearningApp = () => {
   );
 };
 
-export default IELTSEnglishLearningApp;
+export default IELTSApp;

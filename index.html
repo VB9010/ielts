@@ -9,13 +9,13 @@ import {
 
 const IELTSEnglishLearningApp = () => {
   const [currentSection, setCurrentSection] = useState('dashboard');
-  const [userLevel, setUserLevel] = useState('pre-intermediate'); // A2-B1
+  const [userLevel, setUserLevel] = useState('pre-intermediate');
   const [currentScore, setCurrentScore] = useState(4.5);
   const [targetScore, setTargetScore] = useState(6.5);
   const [dailyStreak, setDailyStreak] = useState(12);
   const [wordsLearned, setWordsLearned] = useState(342);
   const [lessonsCompleted, setLessonsCompleted] = useState(28);
-  const [practiceTime, setPracticeTime] = useState(45); // minutes today
+  const [practiceTime, setPracticeTime] = useState(45);
   
   // Password protection system
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -23,7 +23,7 @@ const IELTSEnglishLearningApp = () => {
   const [showPasswordError, setShowPasswordError] = useState(false);
   const [showDemoModal, setShowDemoModal] = useState(false);
   
-  // Secret password (in real app this would be handled securely on backend)
+  // Secret password - change this for security
   const MASTER_PASSWORD = 'IELTSMaster2025';
   
   // Demo limitations
@@ -33,8 +33,198 @@ const IELTSEnglishLearningApp = () => {
     maxGrammarLessons: 2,
     maxActivitiesPerDay: 3,
     accessibleSections: ['dashboard', 'vocabulary', 'grammar'],
-    restrictedMessage: "🔒 Ez a funkció csak a teljes verzióban elérhető!"
+    restrictedMessage: "This feature is only available in the full version!"
   };
+
+  // IELTS-focused skill areas
+  const skillAreas = {
+    vocabulary: {
+      title: "IELTS Vocabulary",
+      description: "Learn 3000+ IELTS-specific words",
+      currentLevel: "B1",
+      progress: 68,
+      categories: [
+        { name: "Academic Words", words: 570, progress: 72, difficulty: "Medium" },
+        { name: "Task 1 Vocabulary", words: 200, progress: 45, difficulty: "Hard" },
+        { name: "Speaking Topics", words: 400, progress: 85, difficulty: "Easy" },
+        { name: "Reading Comprehension", words: 600, progress: 60, difficulty: "Medium" },
+        { name: "Writing Expressions", words: 300, progress: 35, difficulty: "Hard" },
+        { name: "Listening Context", words: 250, progress: 78, difficulty: "Easy" }
+      ]
+    },
+    grammar: {
+      title: "IELTS Grammar",
+      description: "Complex grammar structures in IELTS context",
+      currentLevel: "B1",
+      progress: 55,
+      topics: [
+        { name: "Complex Sentences", progress: 70, importance: "Critical for Writing Task 2" },
+        { name: "Passive Voice", progress: 80, importance: "Essential for Academic Writing" },
+        { name: "Conditionals", progress: 45, importance: "Important for Speaking Part 3" },
+        { name: "Modal Verbs", progress: 65, importance: "Useful for all modules" },
+        { name: "Relative Clauses", progress: 40, importance: "Advanced Writing" },
+        { name: "Reported Speech", progress: 55, importance: "Academic contexts" }
+      ]
+    },
+    pronunciation: {
+      title: "Pronunciation and Intonation",
+      description: "Improve IELTS Speaking score",
+      currentLevel: "B1",
+      progress: 62,
+      areas: [
+        { name: "Word Stress", progress: 75, impact: "High" },
+        { name: "Sentence Intonation", progress: 60, impact: "High" },
+        { name: "Connected Speech", progress: 45, impact: "Medium" },
+        { name: "Difficult Sounds", progress: 70, impact: "Medium" },
+        { name: "Fluency Practice", progress: 55, impact: "Critical" }
+      ]
+    },
+    listening: {
+      title: "Listening Comprehension",
+      description: "Various accents and speech situations",
+      currentLevel: "B1",
+      progress: 58,
+      skills: [
+        { name: "Note-taking", progress: 65, context: "Academic lectures" },
+        { name: "Multiple Speakers", progress: 50, context: "Group discussions" },
+        { name: "Fast Speech", progress: 40, context: "Natural conversations" },
+        { name: "Various Accents", progress: 55, context: "International English" },
+        { name: "Specific Information", progress: 70, context: "IELTS question types" }
+      ]
+    }
+  };
+
+  // Daily learning activities
+  const dailyActivities = [
+    {
+      id: "vocab-builder",
+      title: "Daily Vocabulary Builder",
+      description: "20 new IELTS words every day",
+      time: "15 min",
+      xp: 50,
+      type: "vocabulary",
+      difficulty: "Medium",
+      todayWords: ["phenomenon", "substantial", "undergo", "comprise", "inevitable"]
+    },
+    {
+      id: "grammar-focus",
+      title: "Grammar Structure Practice",
+      description: "Build complex sentences",
+      time: "20 min", 
+      xp: 75,
+      type: "grammar",
+      difficulty: "Hard",
+      todayTopic: "Complex sentences with relative clauses"
+    },
+    {
+      id: "listening-mini",
+      title: "Mini Listening Practice",
+      description: "Short audio texts with different accents",
+      time: "10 min",
+      xp: 40,
+      type: "listening", 
+      difficulty: "Medium",
+      todayFocus: "British vs Australian accent"
+    },
+    {
+      id: "speaking-drill",
+      title: "Speaking Practice",
+      description: "Practice IELTS Speaking topics",
+      time: "15 min",
+      xp: 60,
+      type: "speaking",
+      difficulty: "Hard",
+      todayTopic: "Describe your hometown"
+    },
+    {
+      id: "reading-skills",
+      title: "Reading Techniques",
+      description: "Develop skimming and scanning",
+      time: "25 min",
+      xp: 80,
+      type: "reading",
+      difficulty: "Hard",
+      todaySkill: "Identifying main ideas"
+    },
+    {
+      id: "writing-practice",
+      title: "Writing Practice",
+      description: "Academic writing skills development",
+      time: "30 min",
+      xp: 100,
+      type: "writing",
+      difficulty: "Very Hard",
+      todayTask: "Paragraph structure and linking words"
+    }
+  ];
+
+  // IELTS vocabulary by bands
+  const vocabularyByBand = {
+    "4.0-5.0": {
+      title: "Foundation Vocabulary",
+      description: "Basic IELTS words",
+      words: [
+        { word: "significant", meaning: "important", band: "4.5", context: "The results show a significant increase.", audio: true },
+        { word: "various", meaning: "different", band: "4.5", context: "There are various ways to solve this problem.", audio: true },
+        { word: "approximately", meaning: "about", band: "5.0", context: "Approximately 30% of students...", audio: true },
+        { word: "evident", meaning: "obvious", band: "5.0", context: "It is evident that climate change is happening.", audio: true }
+      ]
+    },
+    "5.5-6.0": {
+      title: "Intermediate Vocabulary", 
+      description: "Mid-level IELTS vocabulary",
+      words: [
+        { word: "substantial", meaning: "considerable", band: "6.0", context: "There has been substantial progress in technology.", audio: true },
+        { word: "phenomena", meaning: "events", band: "6.0", context: "Natural phenomena like earthquakes are unpredictable.", audio: true },
+        { word: "comprise", meaning: "consist of", band: "5.5", context: "The study comprises three main sections.", audio: true },
+        { word: "undergo", meaning: "experience", band: "6.0", context: "The city will undergo major renovations.", audio: true }
+      ]
+    },
+    "6.5-7.0": {
+      title: "Advanced Vocabulary",
+      description: "High-level IELTS vocabulary", 
+      words: [
+        { word: "unprecedented", meaning: "never before", band: "7.0", context: "The pandemic created unprecedented challenges.", audio: true },
+        { word: "deteriorate", meaning: "get worse", band: "6.5", context: "Air quality continues to deteriorate in major cities.", audio: true },
+        { word: "facilitate", meaning: "make easier", band: "6.5", context: "Technology can facilitate learning processes.", audio: true },
+        { word: "inevitable", meaning: "unavoidable", band: "7.0", context: "Change in education is inevitable.", audio: true }
+      ]
+    }
+  };
+
+  // Grammar lessons with IELTS context
+  const grammarLessons = [
+    {
+      id: "complex-sentences",
+      title: "Complex Sentences",
+      level: "B2",
+      ieltsRelevance: "Writing Task 2, Speaking Part 3",
+      description: "How to build complex sentences for IELTS writing",
+      examples: [
+        {
+          simple: "Technology is useful. It can be dangerous.",
+          complex: "Although technology is useful, it can also be dangerous when not used properly.",
+          explanation: "This structure helps you achieve higher band scores in Writing."
+        }
+      ],
+      practice: "Transform simple sentences into complex ones"
+    },
+    {
+      id: "passive-voice",
+      title: "Passive Voice",
+      level: "B1-B2", 
+      ieltsRelevance: "Academic Writing, Task 1",
+      description: "When and how to use passive voice in IELTS",
+      examples: [
+        {
+          active: "Researchers conducted the study in 2020.",
+          passive: "The study was conducted by researchers in 2020.",
+          explanation: "Academic writing frequently uses passive voice."
+        }
+      ],
+      practice: "Convert active sentences to passive for academic writing"
+    }
+  ];
 
   // Check password
   const handlePasswordSubmit = () => {
@@ -42,7 +232,7 @@ const IELTSEnglishLearningApp = () => {
       setIsAuthenticated(true);
       setPasswordInput('');
       setShowPasswordError(false);
-      alert('🎉 Sikeres bejelentkezés! Most elérhető a teljes tartalom.');
+      alert('Success! Full content is now available.');
     } else {
       setShowPasswordError(true);
       setPasswordInput('');
@@ -65,8 +255,8 @@ const IELTSEnglishLearningApp = () => {
       <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
         <div className="text-center mb-6">
           <div className="text-6xl mb-4">🔐</div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Jelszó szükséges</h2>
-          <p className="text-gray-600">Add meg a jelszót a teljes tartalom eléréséhez</p>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Password Required</h2>
+          <p className="text-gray-600">Enter password to access full content</p>
         </div>
         
         <div className="space-y-4">
@@ -75,7 +265,7 @@ const IELTSEnglishLearningApp = () => {
             value={passwordInput}
             onChange={(e) => setPasswordInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()}
-            placeholder="Írd be a jelszót..."
+            placeholder="Enter password..."
             className={`w-full p-4 border-2 rounded-lg text-lg focus:outline-none transition-colors ${
               showPasswordError 
                 ? 'border-red-500 bg-red-50' 
@@ -85,7 +275,7 @@ const IELTSEnglishLearningApp = () => {
           
           {showPasswordError && (
             <div className="text-red-600 text-sm text-center animate-pulse">
-              ❌ Hibás jelszó! Próbáld újra.
+              ❌ Wrong password! Try again.
             </div>
           )}
           
@@ -93,7 +283,7 @@ const IELTSEnglishLearningApp = () => {
             onClick={handlePasswordSubmit}
             className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors"
           >
-            Belépés
+            Login
           </button>
           
           <div className="text-center">
@@ -101,7 +291,7 @@ const IELTSEnglishLearningApp = () => {
               onClick={() => setShowDemoModal(true)}
               className="text-blue-600 hover:text-blue-800 text-sm underline"
             >
-              Folytatás demó módban
+              Continue in demo mode
             </button>
           </div>
         </div>
@@ -115,16 +305,16 @@ const IELTSEnglishLearningApp = () => {
       <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl">
         <div className="text-center">
           <div className="text-4xl mb-4">🔒</div>
-          <h3 className="text-xl font-bold text-gray-800 mb-2">Demó Verzió</h3>
+          <h3 className="text-xl font-bold text-gray-800 mb-2">Demo Version</h3>
           <p className="text-gray-600 mb-4">{demoLimitations.restrictedMessage}</p>
           
           <div className="bg-blue-50 p-4 rounded-lg mb-4">
-            <h4 className="font-semibold text-blue-800 mb-2">Demóban elérhető:</h4>
+            <h4 className="font-semibold text-blue-800 mb-2">Available in demo:</h4>
             <ul className="text-sm text-blue-700 space-y-1">
-              <li>• Alapvető szókincs ({demoLimitations.maxVocabWords} szó)</li>
-              <li>• {demoLimitations.maxGrammarLessons} nyelvtani lecke</li>
-              <li>• Napi {demoLimitations.maxActivitiesPerDay} aktivitás</li>
-              <li>• Haladás követése</li>
+              <li>• Basic vocabulary ({demoLimitations.maxVocabWords} words)</li>
+              <li>• {demoLimitations.maxGrammarLessons} grammar lessons</li>
+              <li>• Daily {demoLimitations.maxActivitiesPerDay} activities</li>
+              <li>• Progress tracking</li>
             </ul>
           </div>
           
@@ -133,246 +323,71 @@ const IELTSEnglishLearningApp = () => {
               onClick={() => setShowDemoModal(false)}
               className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors"
             >
-              OK, folytatom a demót
+              OK, continue demo
             </button>
             <button
               onClick={() => {
                 setShowDemoModal(false);
-                // Show password modal instead
                 setTimeout(() => setIsAuthenticated(false), 100);
               }}
               className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors"
             >
-              Jelszó megadása a teljes verzióhoz
+              Enter password for full version
             </button>
           </div>
         </div>
       </div>
     </div>
   );
-  const skillAreas = {
-    vocabulary: {
-      title: "IELTS Szókincs",
-      description: "3000+ IELTS-specifikus szó tanulása",
-      currentLevel: "B1",
-      progress: 68,
-      categories: [
-        { name: "Academic Words", words: 570, progress: 72, difficulty: "Medium" },
-        { name: "Task 1 Vocabulary", words: 200, progress: 45, difficulty: "Hard" },
-        { name: "Speaking Topics", words: 400, progress: 85, difficulty: "Easy" },
-        { name: "Reading Comprehension", words: 600, progress: 60, difficulty: "Medium" },
-        { name: "Writing Expressions", words: 300, progress: 35, difficulty: "Hard" },
-        { name: "Listening Context", words: 250, progress: 78, difficulty: "Easy" }
-      ]
-    },
-    grammar: {
-      title: "IELTS Nyelvtan",
-      description: "Komplex nyelvtani struktúrák IELTS kontextusban",
-      currentLevel: "B1",
-      progress: 55,
-      topics: [
-        { name: "Complex Sentences", progress: 70, importance: "Critical for Writing Task 2" },
-        { name: "Passive Voice", progress: 80, importance: "Essential for Academic Writing" },
-        { name: "Conditionals", progress: 45, importance: "Important for Speaking Part 3" },
-        { name: "Modal Verbs", progress: 65, importance: "Useful for all modules" },
-        { name: "Relative Clauses", progress: 40, importance: "Advanced Writing" },
-        { name: "Reported Speech", progress: 55, importance: "Academic contexts" }
-      ]
-    },
-    pronunciation: {
-      title: "Kiejtés és Intonáció",
-      description: "IELTS Speaking pontszám javítása",
-      currentLevel: "B1",
-      progress: 62,
-      areas: [
-        { name: "Word Stress", progress: 75, impact: "High" },
-        { name: "Sentence Intonation", progress: 60, impact: "High" },
-        { name: "Connected Speech", progress: 45, impact: "Medium" },
-        { name: "Difficult Sounds", progress: 70, impact: "Medium" },
-        { name: "Fluency Practice", progress: 55, impact: "Critical" }
-      ]
-    },
-    listening: {
-      title: "Hallás Utáni Értés",
-      description: "Különböző akcentusok és beszédhelyzetek",
-      currentLevel: "B1",
-      progress: 58,
-      skills: [
-        { name: "Note-taking", progress: 65, context: "Academic lectures" },
-        { name: "Multiple Speakers", progress: 50, context: "Group discussions" },
-        { name: "Fast Speech", progress: 40, context: "Natural conversations" },
-        { name: "Various Accents", progress: 55, context: "International English" },
-        { name: "Specific Information", progress: 70, context: "IELTS question types" }
-      ]
-    }
-  };
-
-  // Daily learning activities specifically for IELTS preparation
-  const dailyActivities = [
-    {
-      id: "vocab-builder",
-      title: "Napi Szókincs Építő",
-      description: "20 új IELTS szó minden nap",
-      time: "15 perc",
-      xp: 50,
-      type: "vocabulary",
-      difficulty: "Medium",
-      todayWords: ["phenomenon", "substantial", "undergo", "comprise", "inevitable"]
-    },
-    {
-      id: "grammar-focus",
-      title: "Nyelvtani Struktúra Gyakorlás",
-      description: "Komplex mondatok építése",
-      time: "20 perc", 
-      xp: 75,
-      type: "grammar",
-      difficulty: "Hard",
-      todayTopic: "Complex sentences with relative clauses"
-    },
-    {
-      id: "listening-mini",
-      title: "Mini Listening Practice",
-      description: "Rövid audio szövegek különböző akcentusokkal",
-      time: "10 perc",
-      xp: 40,
-      type: "listening", 
-      difficulty: "Medium",
-      todayFocus: "British vs Australian accent"
-    },
-    {
-      id: "speaking-drill",
-      title: "Beszéd Gyakorlat",
-      description: "IELTS Speaking témák gyakorlása",
-      time: "15 perc",
-      xp: 60,
-      type: "speaking",
-      difficulty: "Hard",
-      todayTopic: "Describe your hometown"
-    },
-    {
-      id: "reading-skills",
-      title: "Olvasási Technikák",
-      description: "Skimming és scanning fejlesztés",
-      time: "25 perc",
-      xp: 80,
-      type: "reading",
-      difficulty: "Hard",
-      todaySkill: "Identifying main ideas"
-    },
-    {
-      id: "writing-practice",
-      title: "Írás Gyakorlat",
-      description: "Academic writing skills fejlesztése",
-      time: "30 perc",
-      xp: 100,
-      type: "writing",
-      difficulty: "Very Hard",
-      todayTask: "Paragraph structure and linking words"
-    }
-  ];
-
-  // IELTS vocabulary by bands
-  const vocabularyByBand = {
-    "4.0-5.0": {
-      title: "Foundation Vocabulary",
-      description: "Alapvető IELTS szavak",
-      words: [
-        { word: "significant", meaning: "jelentős", band: "4.5", context: "The results show a significant increase.", audio: true },
-        { word: "various", meaning: "különböző", band: "4.5", context: "There are various ways to solve this problem.", audio: true },
-        { word: "approximately", meaning: "körülbelül", band: "5.0", context: "Approximately 30% of students...", audio: true },
-        { word: "evident", meaning: "nyilvánvaló", band: "5.0", context: "It is evident that climate change is happening.", audio: true }
-      ]
-    },
-    "5.5-6.0": {
-      title: "Intermediate Vocabulary", 
-      description: "Közepes szintű IELTS szókincs",
-      words: [
-        { word: "substantial", meaning: "jelentős, lényeges", band: "6.0", context: "There has been substantial progress in technology.", audio: true },
-        { word: "phenomena", meaning: "jelenségek", band: "6.0", context: "Natural phenomena like earthquakes are unpredictable.", audio: true },
-        { word: "comprise", meaning: "áll valamiből", band: "5.5", context: "The study comprises three main sections.", audio: true },
-        { word: "undergo", meaning: "átmegy valamin", band: "6.0", context: "The city will undergo major renovations.", audio: true }
-      ]
-    },
-    "6.5-7.0": {
-      title: "Advanced Vocabulary",
-      description: "Haladó IELTS szókincs", 
-      words: [
-        { word: "unprecedented", meaning: "példátlan", band: "7.0", context: "The pandemic created unprecedented challenges.", audio: true },
-        { word: "deteriorate", meaning: "romlik", band: "6.5", context: "Air quality continues to deteriorate in major cities.", audio: true },
-        { word: "facilitate", meaning: "megkönnyít", band: "6.5", context: "Technology can facilitate learning processes.", audio: true },
-        { word: "inevitable", meaning: "elkerülhetetlen", band: "7.0", context: "Change in education is inevitable.", audio: true }
-      ]
-    }
-  };
-
-  // Grammar lessons with IELTS context
-  const grammarLessons = [
-    {
-      id: "complex-sentences",
-      title: "Összetett Mondatok",
-      level: "B2",
-      ieltsRelevance: "Writing Task 2, Speaking Part 3",
-      description: "Hogyan építs fel komplex mondatokat IELTS írásban",
-      examples: [
-        {
-          simple: "Technology is useful. It can be dangerous.",
-          complex: "Although technology is useful, it can also be dangerous when not used properly.",
-          explanation: "Ezzel a struktúrával magasabb band score-t érhetsz el Writing-ban."
-        }
-      ],
-      practice: "Transform simple sentences into complex ones"
-    },
-    {
-      id: "passive-voice",
-      title: "Szenvedő Szerkezet",
-      level: "B1-B2", 
-      ieltsRelevance: "Academic Writing, Task 1",
-      description: "Mikor és hogyan használd a passive voice-t IELTS-ben",
-      examples: [
-        {
-          active: "Researchers conducted the study in 2020.",
-          passive: "The study was conducted by researchers in 2020.",
-          explanation: "Academic írásban gyakran használjuk a passive-ot."
-        }
-      ],
-      practice: "Convert active sentences to passive for academic writing"
-    }
-  ];
-
-  // Listening practice with IELTS-style exercises
-  const listeningExercises = [
-    {
-      id: "lecture-notes",
-      title: "Academic Lecture - Climate Change",
-      level: "B2",
-      duration: "5 minutes",
-      ieltsSection: "Section 4 style",
-      skills: ["Note-taking", "Main ideas", "Specific information"],
-      description: "🎧 Listen to a short academic lecture and practice note-taking",
-      questions: [
-        { type: "completion", text: "Climate change affects _______ and _______ patterns globally." },
-        { type: "multiple-choice", text: "The main cause mentioned is:", options: ["Solar activity", "Human activities", "Natural cycles"] },
-        { type: "true-false", text: "The lecturer mentions three main effects of climate change." }
-      ]
-    },
-    {
-      id: "conversation-practice", 
-      title: "Student Conversation - University Life",
-      level: "B1",
-      duration: "3 minutes",
-      ieltsSection: "Section 1 style",
-      skills: ["Everyday English", "Details", "Numbers"],
-      description: "🎧 Two students discussing university accommodation",
-      questions: [
-        { type: "form-completion", text: "Student ID: _______" },
-        { type: "multiple-choice", text: "Preferred accommodation:", options: ["Shared flat", "Studio", "University hall"] }
-      ]
-    }
-  ];
 
   // Dashboard component
   const Dashboard = () => (
     <div className="space-y-8">
+      {/* Demo Banner */}
+      {isDemoMode && (
+        <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4 rounded-xl shadow-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="text-2xl">🔓</div>
+              <div>
+                <h3 className="font-bold">Demo Version</h3>
+                <p className="text-sm opacity-90">Limited features • Password required for full access</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsAuthenticated(false)}
+              className="bg-white text-orange-600 px-4 py-2 rounded-lg font-bold hover:bg-orange-50 transition-colors"
+            >
+              Enter Password
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Full Access Banner */}
+      {isAuthenticated && (
+        <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white p-4 rounded-xl shadow-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="text-2xl">✅</div>
+              <div>
+                <h3 className="font-bold">Full Access Active</h3>
+                <p className="text-sm opacity-90">All features available • Unlimited content</p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setIsAuthenticated(false);
+                setCurrentSection('dashboard');
+              }}
+              className="bg-white text-green-600 px-4 py-2 rounded-lg font-bold hover:bg-green-50 transition-colors"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Welcome and Progress Overview */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-8 rounded-2xl shadow-xl">
         <div className="flex justify-between items-center">
@@ -523,20 +538,20 @@ const IELTSEnglishLearningApp = () => {
             <>
               <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center bg-gray-50">
                 <div className="text-4xl mb-3">🔒</div>
-                <h4 className="font-bold text-lg text-gray-700 mb-2">+3 További Aktivitás</h4>
-                <p className="text-gray-600 text-sm mb-4">Írás gyakorlat, haladó beszéd, komplex nyelvtan</p>
+                <h4 className="font-bold text-lg text-gray-700 mb-2">+3 More Activities</h4>
+                <p className="text-gray-600 text-sm mb-4">Writing practice, advanced speaking, complex grammar</p>
                 <button
                   onClick={() => setIsAuthenticated(false)}
                   className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
                 >
-                  Feloldás jelszóval
+                  Unlock with Password
                 </button>
               </div>
               
               <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center bg-gray-50">
                 <div className="text-4xl mb-3">⭐</div>
-                <h4 className="font-bold text-lg text-gray-700 mb-2">Prémium Funkciók</h4>
-                <p className="text-gray-600 text-sm mb-4">AI tutor, személyre szabott terv, haladó analytics</p>
+                <h4 className="font-bold text-lg text-gray-700 mb-2">Premium Features</h4>
+                <p className="text-gray-600 text-sm mb-4">AI tutor, personalized plan, advanced analytics</p>
                 <button
                   onClick={() => setIsAuthenticated(false)}
                   className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors"
@@ -668,51 +683,17 @@ const IELTSEnglishLearningApp = () => {
                   <div className="bg-yellow-50 border-2 border-dashed border-yellow-300 rounded-lg p-4 flex items-center justify-center">
                     <div className="text-center">
                       <div className="text-2xl mb-2">🔒</div>
-                      <p className="text-sm font-semibold text-gray-700">+{category.words.length - demoLimitations.maxVocabWords} további szó</p>
+                      <p className="text-sm font-semibold text-gray-700">+{category.words.length - demoLimitations.maxVocabWords} more words</p>
                       <button
                         onClick={() => setIsAuthenticated(false)}
                         className="mt-2 bg-yellow-500 text-white px-3 py-1 rounded text-xs hover:bg-yellow-600 transition-colors"
                       >
-                        Feloldás
+                        Unlock
                       </button>
                     </div>
                   </div>
                 )}
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Vocabulary Categories for IELTS */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="text-xl font-bold mb-4">IELTS-Specific Categories</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {skillAreas.vocabulary.categories.map((category, index) => (
-            <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
-              <h4 className="font-semibold text-gray-800 mb-2">{category.name}</h4>
-              <p className="text-sm text-gray-600 mb-3">{category.words} words</p>
-              
-              <div className="mb-3">
-                <div className="flex justify-between text-xs mb-1">
-                  <span>Progress</span>
-                  <span>{category.progress}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-green-500 h-2 rounded-full"
-                    style={{ width: `${category.progress}%` }}
-                  ></div>
-                </div>
-              </div>
-              
-              <span className={`px-2 py-1 rounded text-xs ${
-                category.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
-                category.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                'bg-red-100 text-red-800'
-              }`}>
-                {category.difficulty}
-              </span>
             </div>
           ))}
         </div>
@@ -785,44 +766,20 @@ const IELTSEnglishLearningApp = () => {
           <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-dashed border-purple-300">
             <div className="text-center">
               <div className="text-4xl mb-4">🔒</div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">További Nyelvtani Leckék</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">More Grammar Lessons</h3>
               <p className="text-gray-600 mb-4">
-                +{grammarLessons.length - demoLimitations.maxGrammarLessons} haladó nyelvtani téma: 
+                +{grammarLessons.length - demoLimitations.maxGrammarLessons} advanced grammar topics: 
                 Conditionals, Modal Verbs, Relative Clauses...
               </p>
               <button
                 onClick={() => setIsAuthenticated(false)}
                 className="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 transition-colors font-semibold"
               >
-                Teljes Tartalom Feloldása
+                Unlock Full Content
               </button>
             </div>
           </div>
         )}
-      </div>
-
-      {/* Grammar Progress */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="text-xl font-bold mb-4">Your Grammar Progress</h3>
-        <div className="space-y-4">
-          {skillAreas.grammar.topics.map((topic, index) => (
-            <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <div>
-                <h4 className="font-semibold text-gray-800">{topic.name}</h4>
-                <p className="text-xs text-gray-600">{topic.importance}</p>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="w-24 bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-purple-500 h-2 rounded-full"
-                    style={{ width: `${topic.progress}%` }}
-                  ></div>
-                </div>
-                <span className="text-sm font-semibold text-gray-700">{topic.progress}%</span>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );
@@ -838,7 +795,7 @@ const IELTSEnglishLearningApp = () => {
   };
 
   const startActivity = (activity) => {
-    alert(`🚀 Starting: ${activity.title}\n\nIn a full app, this would launch an interactive ${activity.type} practice session focused on IELTS preparation.`);
+    alert(`Starting: ${activity.title}\n\nIn a full app, this would launch an interactive ${activity.type} practice session focused on IELTS preparation.`);
   };
 
   return (
